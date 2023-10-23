@@ -1,6 +1,8 @@
+mod i_o;
+
 use std::{
     cmp::{max, min},
-    io, process, usize,
+    usize,
 };
 
 type Board = [[Piece; 8]; 8];
@@ -10,7 +12,7 @@ fn main() {
     let mut input_str = Default::default(); // 入力文字列を格納する変数
     let mut index = 0; // 何ターン目か（偶数=>白のターン,奇数=>黒のターン）
 
-    show_board(&pieces);
+    i_o::show_board(&pieces);
 
     loop {
         println!("\n{}のターンです", {
@@ -20,25 +22,19 @@ fn main() {
                 '黒'
             }
         });
+        input_str = i_o::input();
 
-        // 入力
-        io::stdin()
-            .read_line(&mut input_str)
-            .expect("入力に失敗しました。");
-
-        let rtn = analize_str(input_str.chars().collect::<Vec<char>>(), &pieces, index);
-
-        clear_sclean();
+        let rtn = i_o::analize_str(input_str.chars().collect::<Vec<char>>(), &pieces, index);
 
         match rtn {
             Ok(v) => {
                 // OKの場合は、処理を行った後に表示する
                 pieces = v;
-                show_board(&pieces);
+                i_o::show_board(&pieces);
             }
             Err(e) => {
                 // Errの場合は先に表示してからエラーを表示
-                show_board(&pieces);
+                i_o::show_board(&pieces);
                 print_err(e);
                 index -= 1;
             }
@@ -46,37 +42,6 @@ fn main() {
 
         input_str.clear();
         index += 1;
-    }
-}
-
-fn analize_str<'a>(strs: Vec<char>, pieces: &Board, index: isize) -> Result<Board, Errs> {
-    let is_white = index % 2 == 0;
-    // 文字の長さを確認する (\nを含む)
-    match strs.len() {
-        3 => return pawn(pieces, &strs, is_white),
-        4 => todo!(),
-        // match strs[0] {
-        //     'k' | 'K' => king(pieces, &strs, is_white),
-        //     'q' | 'Q' => queen(pieces, &strs, is_white),
-        //     'r' | 'R' => rook(pieces, &strs, is_white),
-        //     'b' | 'B' => bishop(pieces, &strs, is_white),
-        //     'n' | 'N' => knight(pieces, &strs, is_white),
-        //     'o' | 'O' => キャスリング
-        //     _ => Err(Errs::FirstStrErr),
-        // },
-        5 => todo!(),
-        // match strs[0] {
-        //     'k' | 'K' => king(pieces, &strs, is_white),
-        //     'q' | 'Q' => queen(pieces, &strs, is_white),
-        //     'r' | 'R' => rook(pieces, &strs, is_white),
-        //     'b' | 'B' => bishop(pieces, &strs, is_white),
-        //     'n' | 'N' => knight(pieces, &strs, is_white),
-        //     'p' | 'P' => pawn(pieces, &strs, is_white),
-        //     _ => Err(Errs::FirstStrErr),
-        // },
-        6 => todo!(),
-        // o-o-o
-        _ => return Err(Errs::StrsLengthErr),
     }
 }
 
@@ -125,19 +90,6 @@ fn init() -> Board {
     ]
 }
 
-/// 盤面の情報を表示する
-/// * `pieces` - 表示したい盤面の情報
-fn show_board(pieces: &Board) {
-    clear_sclean();
-    for line in pieces {
-        println!("-------------------------");
-        line.iter().for_each(|x| print!("|{}", x.print()));
-        println!("|");
-    }
-
-    println!("-------------------------");
-}
-
 /// エラーを出力する
 /// 続行可能なエラー => println!()
 /// 続行不可なエラー => panic!()
@@ -155,7 +107,7 @@ fn print_err(e: Errs) {
 
 /// 駒の種類・色・移動したかの情報を持つ構造体
 #[derive(Clone, Copy)]
-struct Piece {
+pub struct Piece {
     piece_kind: PieceKinds, // 駒の種類
     color: Colors,          // 駒の色
     is_moved: bool,         // まだ1回も移動していない=>false , 既に移動した=>true
@@ -220,7 +172,7 @@ fn solve_color(is_white: bool) -> Colors {
     }
 }
 
-enum Errs {
+pub enum Errs {
     StrsLengthErr,
     FirstStrErr,
     SecondStrErr,
@@ -284,9 +236,7 @@ fn pawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Board, E
                             loop {
                                 println!("プロモーションする駒を選択してください。");
                                 // 入力
-                                io::stdin()
-                                    .read_line(&mut input_str)
-                                    .expect("入力に失敗しました。");
+                                input_str = i_o::input();
 
                                 match &input_str[..] {
                                     "Q" | "q" | "Queen" | "queen" | "QUEEN" => {
@@ -459,15 +409,4 @@ fn is_between(pieces: &Board, from_x: usize, from_y: usize, to_x: usize, to_y: u
         }
     }
     return true;
-}
-
-/// 画面の消去を行う
-fn clear_sclean() {
-    process::Command::new("clear")
-        .arg("linux")
-        .stdout(process::Stdio::inherit())
-        .spawn()
-        .unwrap()
-        .wait()
-        .unwrap();
 }
