@@ -1,10 +1,10 @@
 pub enum Errs {
     StrsLengthErr,
-    FirstStrErr,
+    //FirstStrErr,
     SecondStrErr,
-    ThirdStrErr,
+    //ThirdStrErr,
     CantMoveErr,
-    UnknownErr,
+    //UnknownErr,
 }
 
 /// エラーを出力する
@@ -12,12 +12,12 @@ pub enum Errs {
 /// 続行不可なエラー => panic!()
 pub fn print_err(e: Errs) {
     match e {
-        Errs::FirstStrErr => println!("1文字目が正しくありません。"),
+        //Errs::FirstStrErr => println!("1文字目が正しくありません。"),
         Errs::SecondStrErr => println!("2文字目が正しくありません。"),
-        Errs::ThirdStrErr => println!("3文字目が正しくありません。"),
+        //Errs::ThirdStrErr => println!("3文字目が正しくありません。"),
         //Errs::ForthStrErr => println!("4文字目が正しくありません。"),
         Errs::StrsLengthErr => println!("文字数が正しくありません。"),
         Errs::CantMoveErr => println!("そのマスには動けません。"),
-        Errs::UnknownErr => panic!("不明なエラーが発生"),
+        //Errs::UnknownErr => panic!("不明なエラーが発生"),
     }
 }

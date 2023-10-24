@@ -31,7 +31,7 @@ pub fn pawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Boar
                         // プロモーション
                         if y == 0 || y == 7 {
                             let mut replace_piece;
-                            let mut input_str = String::new();
+                            let mut input_str;
                             loop {
                                 println!("プロモーションする駒を選択してください。");
                                 // 入力

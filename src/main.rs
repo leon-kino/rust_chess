@@ -8,7 +8,7 @@ use crate::errs::Errs;
 
 fn main() {
     let mut pieces = piece::init(); // 駒の情報が入る変数
-    let mut input_str = Default::default(); // 入力文字列を格納する変数
+    let mut input_str;
     let mut index = 0; // 何ターン目か（偶数=>白のターン,奇数=>黒のターン）
 
     i_o::show_board(&pieces);
