@@ -1,6 +1,6 @@
-use crate::pawn;
+use crate::movements::pawn::pawn;
+use crate::piece::Piece;
 use crate::Errs;
-use crate::Piece;
 use std::io;
 use std::process;
 
