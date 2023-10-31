@@ -1,3 +1,5 @@
+/// このプログラムが出力するエラーの一覧
+#[derive(Debug, PartialEq)]
 pub enum Errs {
     StrsLengthErr,
     //FirstStrErr,

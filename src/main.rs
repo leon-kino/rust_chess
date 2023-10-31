@@ -6,6 +6,7 @@ mod piece;
 
 use crate::errs::Errs;
 
+/// メイン関数
 fn main() {
     let mut pieces = piece::init(); // 駒の情報が入る変数
     let mut input_str;
