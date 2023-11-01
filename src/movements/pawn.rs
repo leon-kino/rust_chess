@@ -6,6 +6,8 @@ use crate::piece::{Board, Piece, PieceKinds};
 use super::move_piece;
 
 /// ポーンの移動を行う
+/// ### Ok:移動後の駒の配置
+/// ### Ng:動かせない理由
 /// * `pieces` 駒の配置を記憶した配列
 /// * `strs` 駒の配置を記憶した配列
 pub fn pawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Board, Errs> {

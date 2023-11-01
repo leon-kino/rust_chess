@@ -42,6 +42,7 @@ fn move_piece(
     Ok(rtn_pieces)
 }
 
+/// 移動先と移動元の間に駒があるかを判断する
 /// ### 移動元と移動先の間に駒がある=> ture , 駒はない=>false
 /// * `pieces`: 駒の配置
 /// * `from_y`: 移動元のy座標

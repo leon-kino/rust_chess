@@ -59,6 +59,7 @@ pub enum Colors {
 }
 
 /// 初期の盤面を作成し、戻り値として返す
+/// ### チェスの初期状態の盤情報
 pub fn init() -> Board {
     let bk = Piece::create_instance(PieceKinds::King, Colors::Black);
     let bq = Piece::create_instance(PieceKinds::Queen, Colors::Black);
