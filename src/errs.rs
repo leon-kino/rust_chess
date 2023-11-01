@@ -1,3 +1,5 @@
+/// このプログラムが出力するエラーの一覧
+#[derive(Debug, PartialEq)]
 pub enum Errs {
     StrsLengthErr,
     //FirstStrErr,
@@ -10,6 +12,7 @@ pub enum Errs {
 /// エラーを出力する
 /// 続行可能なエラー => println!()
 /// 続行不可なエラー => panic!()
+/// * `e`: 出力したいエラーの種類
 pub fn print_err(e: Errs) {
     match e {
         //Errs::FirstStrErr => println!("1文字目が正しくありません。"),

@@ -10,7 +10,13 @@ use crate::piece::{Board, Colors, Piece, PieceKinds};
 use std::cmp::{max, min};
 
 /// 駒を移動させる
-/// エラー: 移動元として駒がない場所を指定された場合
+/// ### Ok : 移動後の駒
+/// ### Err: 移動元と移動先の間に駒があった場合
+/// * `pieces`: 駒の配置
+/// * `from_y`: 移動元のy座標
+/// * `from_x`: 移動元のx座標
+/// * `to_y`: 移動先のy座標
+/// * `to_x`: 移動先のx座標
 fn move_piece(
     pieces: Board,
     from_y: usize,
@@ -36,7 +42,13 @@ fn move_piece(
     Ok(rtn_pieces)
 }
 
-/// 移動元と移動先の間に駒がある=> ture , 駒はない=>false
+/// 移動先と移動元の間に駒があるかを判断する
+/// ### 移動元と移動先の間に駒がある=> ture , 駒はない=>false
+/// * `pieces`: 駒の配置
+/// * `from_y`: 移動元のy座標
+/// * `from_x`: 移動元のx座標
+/// * `to_y`: 移動先のy座標
+/// * `to_x`: 移動先のx座標
 fn is_between(pieces: &Board, from_x: usize, from_y: usize, to_x: usize, to_y: usize) -> bool {
     if from_x == to_x && from_y == to_y {
         panic!("論理エラー（移動先と移動元が同じ）")
@@ -83,14 +95,14 @@ fn is_between(pieces: &Board, from_x: usize, from_y: usize, to_x: usize, to_y: u
     if from_x + from_y == to_x + to_y {
         if from_x > to_x {
             for i in 1..from_x - to_x {
-                if pieces[from_y - i][from_x + i].piece_kind != PieceKinds::Empty {
+                if pieces[from_y + i][from_x - i].piece_kind != PieceKinds::Empty {
                     return true;
                 }
             }
             return false;
         } else {
             for i in 1..to_x - from_x {
-                if pieces[from_y + i][from_x - i].piece_kind != PieceKinds::Empty {
+                if pieces[from_y - i][from_x + i].piece_kind != PieceKinds::Empty {
                     return true;
                 }
             }
@@ -98,4 +110,77 @@ fn is_between(pieces: &Board, from_x: usize, from_y: usize, to_x: usize, to_y: u
         }
     }
     return true;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::piece::init;
+
+    use super::*;
+    use crate::piece::Piece;
+    #[test]
+    fn move_test() {
+        let solve = move_piece(init(), 1, 0, 3, 0);
+        let mut ans = init();
+        // 移動先と移動元の駒の種類が等しいこと
+        ans[3][0] = ans[1][0];
+        // 移動先の駒はis_movedがtrueになっていること
+        ans[3][0].is_moved = true;
+        // 移動元の駒はEmptyになっていること
+        ans[1][0] = Piece::create_instance(PieceKinds::Empty, Colors::Empty);
+
+        assert_eq!(Ok(ans), solve);
+    }
+    #[test]
+    fn tate_ok() {
+        let mut pieces = init();
+        pieces[2][0] = Piece::create_instance(PieceKinds::Rook, Colors::White);
+        assert_eq!(false, is_between(&pieces, 0, 2, 5, 2));
+    }
+    #[test]
+    fn tate_ng() {
+        let mut pieces = init();
+        pieces[2][0] = Piece::create_instance(PieceKinds::Rook, Colors::White);
+        pieces[2][3] = Piece::create_instance(PieceKinds::Pawn, Colors::White);
+        assert_eq!(true, is_between(&pieces, 0, 2, 5, 2));
+    }
+    #[test]
+    fn yoko_ok() {
+        let mut pieces = init();
+        pieces[2][0] = Piece::create_instance(PieceKinds::Rook, Colors::White);
+        assert_eq!(false, is_between(&pieces, 0, 2, 0, 5));
+    }
+    #[test]
+    fn yoko_ng() {
+        let mut pieces = init();
+        pieces[2][0] = Piece::create_instance(PieceKinds::Rook, Colors::White);
+        pieces[4][0] = Piece::create_instance(PieceKinds::Pawn, Colors::White);
+        assert_eq!(true, is_between(&pieces, 0, 2, 0, 5));
+    }
+    #[test]
+    fn left_up_ok() {
+        let mut pieces = init();
+        pieces[2][0] = Piece::create_instance(PieceKinds::Bishop, Colors::White);
+        assert_eq!(false, is_between(&pieces, 0, 2, 2, 4));
+    }
+    #[test]
+    fn left_up_ng() {
+        let mut pieces = init();
+        pieces[2][0] = Piece::create_instance(PieceKinds::Bishop, Colors::White);
+        pieces[3][1] = Piece::create_instance(PieceKinds::Pawn, Colors::White);
+        assert_eq!(true, is_between(&pieces, 0, 2, 2, 4));
+    }
+    #[test]
+    fn right_up_ok() {
+        let mut pieces = init();
+        pieces[5][0] = Piece::create_instance(PieceKinds::Bishop, Colors::White);
+        assert_eq!(false, is_between(&pieces, 0, 5, 3, 2));
+    }
+    #[test]
+    fn right_up_ng() {
+        let mut pieces = init();
+        pieces[5][0] = Piece::create_instance(PieceKinds::Bishop, Colors::White);
+        pieces[4][1] = Piece::create_instance(PieceKinds::Pawn, Colors::White);
+        assert_eq!(true, is_between(&pieces, 0, 5, 3, 2));
+    }
 }

@@ -2,7 +2,7 @@
 pub type Board = [[Piece; 8]; 8];
 
 /// 駒の種類・色・移動したかの情報を持つ構造体
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Piece {
     pub piece_kind: PieceKinds, // 駒の種類
     pub color: Colors,          // 駒の色
@@ -39,7 +39,7 @@ impl Piece {
 }
 
 /// 駒の種類
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum PieceKinds {
     King,
     Queen,
@@ -51,7 +51,7 @@ pub enum PieceKinds {
 }
 
 /// 色の種類
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Colors {
     White,
     Black,
@@ -59,6 +59,7 @@ pub enum Colors {
 }
 
 /// 初期の盤面を作成し、戻り値として返す
+/// ### チェスの初期状態の盤情報
 pub fn init() -> Board {
     let bk = Piece::create_instance(PieceKinds::King, Colors::Black);
     let bq = Piece::create_instance(PieceKinds::Queen, Colors::Black);
@@ -101,4 +102,39 @@ pub fn init() -> Board {
         ],
         [br.clone(), bn.clone(), bb.clone(), bq, bk, bb, bn, br],
     ]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn instance() {
+        let king = Piece::create_instance(PieceKinds::King, Colors::Black);
+        assert_eq!(PieceKinds::King, king.piece_kind);
+        assert_eq!(Colors::Black, king.color);
+        assert_eq!(false, king.is_moved);
+    }
+
+    // 完全一致かの比較方法がわからないため保留(a == aを補償したい)
+    // /// Empty以外は重複していないことを確認
+    // #[test]
+    // fn not_multiple() {
+    //     let piece = init();
+    //     for y in 0..9 {
+    //         for x in 0..9 {
+    //             for y2 in y..9 {
+    //                 for x2 in (x + 1)..9 {
+    //                     if piece[y][x].piece_kind != PieceKinds::Empty {
+    //                         if std::cmp::Eq(&piece[y][x], &piece[y2][x2]) {
+    //                             if !(y == y2 && x == x2) {
+    //                                 panic!("同じ駒が出現 y:{}x:{} y2:{}x2:{}", y, x, y2, x2)
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }
