@@ -6,6 +6,7 @@ use crate::piece::{Board, Piece, PieceKinds};
 use super::move_piece;
 
 /// ポーンの移動を行う
+/// ### 戻り値:
 /// ### Ok:移動後の駒の配置
 /// ### Ng:動かせない理由
 /// * `pieces` 駒の配置を記憶した配列
@@ -13,11 +14,7 @@ use super::move_piece;
 pub fn pawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Board, Errs> {
     // 文字列の検証
     let x = alphabet_to_number(&strs[0])?;
-    let y = strs[1] as isize - '1' as isize;
-    // yが正しいかの検証
-    if y < 0 || y > 7 {
-        return Err(Errs::SecondStrErr);
-    }
+    let y = is_inner_board(strs[1] as isize - '1' as isize)? as isize;
 
     // 1マス進む or 初期値で２マス進む
     let piece_adjust = if is_white { -1 } else { 1 };
@@ -35,48 +32,7 @@ pub fn pawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Boar
 
                         // プロモーション
                         if y == 0 || y == 7 {
-                            let mut replace_piece;
-                            let mut input_str;
-                            loop {
-                                println!("プロモーションする駒を選択してください。");
-                                // 入力
-                                input_str = i_o::input();
-
-                                match &input_str[..] {
-                                    "Q" | "q" | "Queen" | "queen" | "QUEEN" => {
-                                        replace_piece = Piece::create_instance(
-                                            PieceKinds::Queen,
-                                            solve_color(is_white),
-                                        );
-                                        break;
-                                    }
-                                    "R" | "r" | "Rook" | "rook" | "ROOK" => {
-                                        replace_piece = Piece::create_instance(
-                                            PieceKinds::Rook,
-                                            solve_color(is_white),
-                                        );
-                                        break;
-                                    }
-                                    "B" | "b" | "Bishop" | "bishop" | "BISHOP" => {
-                                        replace_piece = Piece::create_instance(
-                                            PieceKinds::Bishop,
-                                            solve_color(is_white),
-                                        );
-                                        break;
-                                    }
-                                    "N" | "n" | "Knight" | "knight" | "KNIGHT" => {
-                                        replace_piece = Piece::create_instance(
-                                            PieceKinds::Knight,
-                                            solve_color(is_white),
-                                        );
-                                        break;
-                                    }
-                                    _ => println!("コマの種類を選択してください"),
-                                }
-                            }
-                            replace_piece.is_moved = true;
-
-                            rtn[y as usize][x] = replace_piece;
+                            rtn = promotion(&rtn, x, y as usize, is_white);
                         }
                         return Ok(rtn);
                     }
@@ -87,6 +43,75 @@ pub fn pawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Boar
     } else {
         return Err(Errs::CantMoveErr);
     }
+}
+
+/// ポーンの移動を行う(攻撃時)
+/// ### 戻り値:
+/// ### Ok:移動後の駒の配置
+/// ### Ng:動かせない理由
+/// * `pieces` 駒の配置を記憶した配列
+/// * `strs` 駒の配置を記憶した配列
+pub fn xpawn<'a>(pieces: &Board, strs: &Vec<char>, is_white: bool) -> Result<Board, Errs> {
+    // 文字列の検証
+    let from_x = alphabet_to_number(&strs[0])?;
+    let to_x = alphabet_to_number(&strs[2])?;
+    let to_y = is_inner_board(strs[3] as isize - '1' as isize)?;
+    let from_y = is_inner_board(to_y as isize + if is_white { -1 } else { 1 })?;
+
+    if pieces[from_y][from_x].piece_kind == PieceKinds::Pawn {
+        if pieces[from_y][from_x].color == solve_color(is_white) {
+            if judge_exist(pieces, to_x, to_y, is_white) == 2 {
+                let mut rtn = move_piece(*pieces, from_y, from_x, to_y, to_x)?;
+                if to_y == 0 || to_y == 7 {
+                    rtn = promotion(pieces, to_x, to_y, is_white);
+                }
+                return Ok(rtn);
+            }
+        }
+    }
+
+    return Err(Errs::CantMoveErr);
+}
+
+/// 0 or 7マス目まで到達したポーンをユーザーから指定された駒に変更する
+/// ### 戻り値: プロモーション処理後の盤面の情報
+/// * `pieces`: 盤面の情報
+/// * `x`: ポーンのX座標
+/// * `y`: ポーンのy座標
+/// * `is_white`: 変換したいポーンの色 白=>true 黒=>false
+fn promotion(pieces: &Board, x: usize, y: usize, is_white: bool) -> Board {
+    let mut replace_piece;
+    let mut input_str;
+    loop {
+        println!("プロモーションする駒を選択してください。");
+        // 入力
+        input_str = i_o::input();
+
+        match &input_str[..] {
+            "Q" | "q" | "Queen" | "queen" | "QUEEN" => {
+                replace_piece = Piece::create_instance(PieceKinds::Queen, solve_color(is_white));
+                break;
+            }
+            "R" | "r" | "Rook" | "rook" | "ROOK" => {
+                replace_piece = Piece::create_instance(PieceKinds::Rook, solve_color(is_white));
+                break;
+            }
+            "B" | "b" | "Bishop" | "bishop" | "BISHOP" => {
+                replace_piece = Piece::create_instance(PieceKinds::Bishop, solve_color(is_white));
+                break;
+            }
+            "N" | "n" | "Knight" | "knight" | "KNIGHT" => {
+                replace_piece = Piece::create_instance(PieceKinds::Knight, solve_color(is_white));
+                break;
+            }
+            _ => println!("コマの種類を選択してください"),
+        }
+    }
+    replace_piece.is_moved = true;
+
+    let mut rtn = *pieces;
+    rtn[y][x] = replace_piece;
+    return rtn;
 }
 
 #[cfg(test)]

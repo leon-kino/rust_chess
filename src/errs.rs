@@ -2,7 +2,7 @@
 #[derive(Debug, PartialEq)]
 pub enum Errs {
     StrsLengthErr,
-    //FirstStrErr,
+    FirstStrErr,
     SecondStrErr,
     //ThirdStrErr,
     CantMoveErr,
@@ -15,7 +15,7 @@ pub enum Errs {
 /// * `e`: 出力したいエラーの種類
 pub fn print_err(e: Errs) {
     match e {
-        //Errs::FirstStrErr => println!("1文字目が正しくありません。"),
+        Errs::FirstStrErr => println!("1文字目が正しくありません。"),
         Errs::SecondStrErr => println!("2文字目が正しくありません。"),
         //Errs::ThirdStrErr => println!("3文字目が正しくありません。"),
         //Errs::ForthStrErr => println!("4文字目が正しくありません。"),
