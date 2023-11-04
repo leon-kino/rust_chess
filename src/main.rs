@@ -29,9 +29,16 @@ fn main() {
 
         match rtn {
             Ok(v) => {
-                // OKの場合は、処理を行った後に表示する
-                pieces = v;
-                i_o::show_board(&pieces);
+                // 今回の処理のせいでチェックされていないかを確認
+                if check::check_check(&v, index % 2 == 0).len() != 0 {
+                    i_o::show_board(&pieces);
+                    errs::print_err(Errs::CantMoveErr);
+                    index -= 1;
+                } else {
+                    // OKの場合は、処理を行った後に表示する
+                    pieces = v;
+                    i_o::show_board(&pieces);
+                }
             }
             Err(e) => {
                 // Errの場合は先に表示してからエラーを表示
