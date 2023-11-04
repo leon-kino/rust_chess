@@ -2,7 +2,7 @@ use crate::library::{is_inner_board, solve_color};
 use crate::piece::*;
 
 #[derive(Debug, PartialEq)]
-enum CheckKinds {
+pub enum CheckKinds {
     Tate,
     Yoko,
     LeftUp,
@@ -15,7 +15,7 @@ enum CheckKinds {
 /// ### 戻り値:チェックの種類をまとめたリスト
 /// * `pieces`: 盤の情報
 /// * `is_white`: 検証したい色(白=>true, 黒=>false)
-fn check_check(pieces: &Board, is_white: bool) -> Vec<CheckKinds> {
+pub fn check_check(pieces: &Board, is_white: bool) -> Vec<CheckKinds> {
     let mut ans = Vec::with_capacity(5);
     let color = solve_color(is_white);
     let mut king_y = 99;
