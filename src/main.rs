@@ -1,3 +1,4 @@
+mod check;
 mod errs;
 mod i_o;
 mod library;

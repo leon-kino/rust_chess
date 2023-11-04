@@ -105,6 +105,23 @@ pub fn init() -> Board {
 }
 
 #[cfg(test)]
+pub mod debug_tools {
+    use super::*;
+    pub fn init_null() -> Board {
+        let empty = Piece::create_instance(PieceKinds::Empty, Colors::Empty);
+        [
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+            [empty, empty, empty, empty, empty, empty, empty, empty],
+        ]
+    }
+}
+#[cfg(test)]
 mod tests {
     use super::*;
 
