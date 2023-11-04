@@ -1,4 +1,5 @@
 use crate::movements::pawn::pawn;
+use crate::movements::pawn::xpawn;
 use crate::piece::Piece;
 use crate::Errs;
 use std::io;
@@ -32,16 +33,25 @@ pub fn analize_str<'a>(strs: Vec<char>, pieces: &Board, index: isize) -> Result<
     // 文字の長さを確認する (\nを含む)
     match strs.len() {
         3 => return pawn(pieces, &strs, is_white),
-        4 => todo!(),
-        // match strs[0] {
-        //     'k' | 'K' => king(pieces, &strs, is_white),
-        //     'q' | 'Q' => queen(pieces, &strs, is_white),
-        //     'r' | 'R' => rook(pieces, &strs, is_white),
-        //     'b' | 'B' => bishop(pieces, &strs, is_white),
-        //     'n' | 'N' => knight(pieces, &strs, is_white),
-        //     'o' | 'O' => キャスリング
-        //     _ => Err(Errs::FirstStrErr),
-        // },
+        4 => match strs[0] {
+            'a'..='h' => {
+                if strs[1] == 'x' || strs[1] == 'X' {
+                    if strs[0] == 'b' || strs[1] == 'B' {
+                        todo!() //ビショップとポーンのどちらかを判定する処理
+                    }
+                    return xpawn(pieces, &strs, is_white);
+                } else {
+                    return Err(Errs::SecondStrErr);
+                };
+            }
+            'K' => todo!(),
+            'Q' => todo!(),
+            'R' => todo!(),
+            'B' => todo!(),
+            'N' => todo!(),
+            'o' | 'O' => todo!(), // キャスリング
+            _ => Err(Errs::FirstStrErr),
+        },
         5 => todo!(),
         // match strs[0] {
         //     'k' | 'K' => king(pieces, &strs, is_white),
