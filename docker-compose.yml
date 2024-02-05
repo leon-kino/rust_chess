@@ -1,0 +1,6 @@
+services:
+    rust_chess:
+        image: rust_chess_image
+        volumes:
+            - ./src:/project
+        working_dir: /project
